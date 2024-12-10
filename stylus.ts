@@ -1,3 +1,9 @@
+/**
+ * The Stylus preprocessor for the esbuild PostCSS Plugin.
+ *
+ * @module
+ */
+
 import type { Preprocessor, PreprocessorResults } from "./postcss.ts";
 import stylus from "stylus";
 

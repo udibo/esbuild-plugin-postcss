@@ -1,3 +1,9 @@
+/**
+ * The Less preprocessor for the esbuild PostCSS Plugin.
+ *
+ * @module
+ */
+
 import type { Preprocessor, PreprocessorResults } from "./postcss.ts";
 import less from "less";
 
