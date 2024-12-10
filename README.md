@@ -21,24 +21,6 @@ more.
 
 ## Documentation
 
-### Installation
-
-To be able to use this plugin, you will have to add the following entries to
-your deno.json file's `imports` array.
-
-```json
-{
-  "imports": {
-    // Required for the plugin to work
-    "@udibo/esbuild-plugin-postcss": "jsr:@udibo/esbuild-plugin-postcss@0.1",
-    // Optional for the preprocessors to work
-    "@udibo/esbuild-plugin-postcss/sass": "jsr:@udibo/esbuild-plugin-postcss/sass@0.1",
-    "@udibo/esbuild-plugin-postcss/less": "jsr:@udibo/esbuild-plugin-postcss/less@0.1",
-    "@udibo/esbuild-plugin-postcss/stylus": "jsr:@udibo/esbuild-plugin-postcss/stylus@0.1"
-  }
-}
-```
-
 ### Outputs
 
 This plugin has two different output formats. When the styles are the main
@@ -115,6 +97,9 @@ The output would look like this in the `./dist/index.css` file:
 
 This plugin supports CSS Modules. You can pass in the options for CSS Modules
 through the plugin options modules property.
+
+To learn more about the CSS Modules options, see the
+[CSS Modules documentation](https://www.npmjs.com/package/postcss-modules).
 
 In the following example, the css modules are enabled and using the default
 options.
