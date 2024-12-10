@@ -1,7 +1,7 @@
 # esbuild PostCSS Plugin
 
-[![JSR](https://jsr.io/badges/esbuild-plugin-postcss)](https://jsr.io/esbuild-plugin-postcss)
-[![JSR Score](https://jsr.io/badges/esbuild-plugin-postcss/score)](https://jsr.io/esbuild-plugin-postcss)
+[![JSR](https://jsr.io/badges/@udibo/esbuild-plugin-postcss)](https://jsr.io/@udibo/esbuild-plugin-postcss)
+[![JSR Score](https://jsr.io/badges/@udibo/esbuild-plugin-postcss/score)](https://jsr.io/@udibo/esbuild-plugin-postcss)
 [![CI/CD](https://github.com/udibo/esbuild-plugin-postcss/actions/workflows/main.yml/badge.svg)](https://github.com/udibo/esbuild-plugin-postcss/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/udibo/esbuild-plugin-postcss/branch/main/graph/badge.svg?token=G5XCR01X8E)](https://codecov.io/gh/udibo/esbuild-plugin-postcss)
 [![license](https://img.shields.io/github/license/udibo/esbuild-plugin-postcss)](https://github.com/udibo/esbuild-plugin-postcss/blob/main/LICENSE)
@@ -30,11 +30,11 @@ your deno.json file's `imports` array.
 {
   "imports": {
     // Required for the plugin to work
-    "@udibo/esbuild-plugin-postcss": "jsr:@udibo/esbuild-plugin-postcss@0.1.0",
+    "@udibo/esbuild-plugin-postcss": "jsr:@udibo/esbuild-plugin-postcss@0.1",
     // Optional for the preprocessors to work
-    "@udibo/esbuild-plugin-postcss/sass": "jsr:@udibo/esbuild-plugin-postcss/sass@0.1.0",
-    "@udibo/esbuild-plugin-postcss/less": "jsr:@udibo/esbuild-plugin-postcss/less@0.1.0",
-    "@udibo/esbuild-plugin-postcss/stylus": "jsr:@udibo/esbuild-plugin-postcss/stylus@0.1.0"
+    "@udibo/esbuild-plugin-postcss/sass": "jsr:@udibo/esbuild-plugin-postcss/sass@0.1",
+    "@udibo/esbuild-plugin-postcss/less": "jsr:@udibo/esbuild-plugin-postcss/less@0.1",
+    "@udibo/esbuild-plugin-postcss/stylus": "jsr:@udibo/esbuild-plugin-postcss/stylus@0.1"
   }
 }
 ```
