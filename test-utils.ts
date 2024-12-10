@@ -50,3 +50,13 @@ export async function build(
   await delay(1);
   return result;
 }
+
+/**
+ * Reads a text file and normalizes the line endings to Unix style.
+ *
+ * @param filePath - The path to the file to read.
+ * @returns The content of the file.
+ */
+export async function readTextFile(filePath: string) {
+  return (await Deno.readTextFile(filePath)).replace(/\r\n/g, "\n");
+}

@@ -7,7 +7,7 @@ import * as path from "@std/path";
 import { describe, it } from "@std/testing/bdd";
 
 import { sassPreprocessor } from "./sass.ts";
-import { build } from "./test-utils.ts";
+import { build, readTextFile } from "./test-utils.ts";
 
 describe("sass", () => {
   const rootDir = path.resolve("./examples/sass");
@@ -35,7 +35,7 @@ describe("sass", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await Deno.readTextFile(outFilePath),
+        await readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -65,7 +65,7 @@ describe("sass", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await Deno.readTextFile(outFilePath),
+        await readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -94,7 +94,7 @@ describe("sass", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await Deno.readTextFile(outFilePath),
+        await readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -124,7 +124,7 @@ describe("sass", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await Deno.readTextFile(outFilePath),
+        await readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
