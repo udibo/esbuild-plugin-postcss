@@ -42,6 +42,7 @@ to the css.
 
 ```ts
 import esbuild from "esbuild";
+import autoprefixer from "autoprefixer";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 esbuild.build({
