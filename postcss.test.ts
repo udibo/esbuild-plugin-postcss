@@ -10,7 +10,7 @@ import type postcss from "postcss";
 import autoprefixer from "autoprefixer";
 import tailwindcss from "tailwindcss";
 
-import { build, readTextFile } from "./test-utils.ts";
+import { build } from "./test-utils.ts";
 
 describe("css", () => {
   describe("basic", () => {
@@ -33,7 +33,7 @@ describe("css", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await readTextFile(outFilePath),
+        await Deno.readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -60,7 +60,7 @@ describe("css", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await readTextFile(outFilePath),
+        await Deno.readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -87,7 +87,7 @@ describe("css", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await readTextFile(outFilePath),
+        await Deno.readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -115,7 +115,7 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
   });
@@ -138,12 +138,12 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
     await assertSnapshot(
       t,
-      await readTextFile(path.resolve(rootDir, "./main.module.css.json")),
+      await Deno.readTextFile(path.resolve(rootDir, "./main.module.css.json")),
     );
   });
 
@@ -165,12 +165,12 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
     await assertSnapshot(
       t,
-      await readTextFile(path.resolve(rootDir, "./main.module.css.json")),
+      await Deno.readTextFile(path.resolve(rootDir, "./main.module.css.json")),
     );
   });
 
@@ -192,12 +192,12 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
     await assertSnapshot(
       t,
-      await readTextFile(path.resolve(rootDir, "./main.css.json")),
+      await Deno.readTextFile(path.resolve(rootDir, "./main.css.json")),
     );
   });
 
@@ -219,7 +219,7 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
   });
@@ -244,12 +244,12 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
     await assertSnapshot(
       t,
-      await readTextFile(
+      await Deno.readTextFile(
         path.resolve(rootDir, "./custom.module.css.json"),
       ),
     );
@@ -277,12 +277,12 @@ describe("modules", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
     await assertSnapshot(
       t,
-      await readTextFile(path.resolve(rootDir, "./main.module.css.json")),
+      await Deno.readTextFile(path.resolve(rootDir, "./main.module.css.json")),
     );
   });
 });
@@ -315,7 +315,7 @@ describe("plugins", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await readTextFile(outFilePath),
+        await Deno.readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });
@@ -348,7 +348,7 @@ describe("plugins", () => {
       );
       assertEquals(
         result.outputFiles[0].text,
-        await readTextFile(outFilePath),
+        await Deno.readTextFile(outFilePath),
       );
       assertEquals(result.outputFiles.length, 1);
     });

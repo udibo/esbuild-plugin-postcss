@@ -7,7 +7,7 @@ import * as path from "@std/path";
 import { describe, it } from "@std/testing/bdd";
 
 import { lessPreprocessor } from "./less.ts";
-import { build, readTextFile } from "./test-utils.ts";
+import { build } from "./test-utils.ts";
 
 describe("less", () => {
   const rootDir = path.resolve("./examples/less");
@@ -34,7 +34,7 @@ describe("less", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
   });
@@ -64,7 +64,7 @@ describe("less", () => {
     );
     assertEquals(
       result.outputFiles[0].text,
-      await readTextFile(outFilePath),
+      await Deno.readTextFile(outFilePath),
     );
     assertEquals(result.outputFiles.length, 1);
   });
