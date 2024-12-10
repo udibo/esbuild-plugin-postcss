@@ -1,0 +1,17 @@
+/* foreground.css */
+body {
+  color: white;
+}
+
+/* postcss:reset.css */
+body {
+  color: black;
+  background: white;
+}
+
+/* background.css */
+body {
+  background: black;
+}
+
+/* postcss:./entry.css */

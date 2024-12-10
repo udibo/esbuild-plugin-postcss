@@ -1,0 +1,11 @@
+export const snapshot = {};
+
+snapshot[`modules > modules defaults to true 1`] = `'{"title":"_title_wsfbq_5 _title_3695r_1","article":"_article_wsfbq_10"}'`;
+
+snapshot[`modules > modules set to true 1`] = `'{"title":"_title_wsfbq_5 _title_3695r_1","article":"_article_wsfbq_10"}'`;
+
+snapshot[`modules > isModule returning true 1`] = `'{"title":"_title_wsfbq_5 _title_3695r_1","article":"_article_wsfbq_10"}'`;
+
+snapshot[`modules > modules set to custom postcss-modules plugin configuration options 1`] = `'{"title":"custom-module__title___ticPp mixins__title___ymOTP","article":"custom-module__article___Z26ow"}'`;
+
+snapshot[`modules > ts entrypoint should output the module map and css to js 1`] = `'{"title":"_title_wsfbq_5 _title_3695r_1","article":"_article_wsfbq_10"}'`;

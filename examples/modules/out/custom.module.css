@@ -1,0 +1,16 @@
+.mixins__title___ymOTP {
+  color: black;
+  font-size: 40px;
+}
+.mixins__title___ymOTP:hover {
+  color: red;
+}
+.page {
+  padding: 20px;
+}
+.custom-module__title___ticPp {
+  color: green;
+}
+.custom-module__article___Z26ow {
+  font-size: 16px;
+}
