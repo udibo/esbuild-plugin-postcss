@@ -33,8 +33,9 @@ export async function build(
     entryPoints: entryPoints,
     outdir: "out",
     absWorkingDir: path.resolve(`./examples/${example}`),
+    format: "esm",
     ...options.esbuildOptions,
-  };
+  } as esbuild.BuildOptions;
   const result = await esbuild.build({
     ...buildOptions,
     write: false,
