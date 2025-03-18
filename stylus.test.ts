@@ -8,6 +8,7 @@ import { describe, it } from "@std/testing/bdd";
 
 import { stylusPreprocessor } from "./stylus.ts";
 import { build } from "./test-utils.ts";
+import { postCSSPlugin } from "./postcss.ts";
 
 describe("stylus", () => {
   const rootDir = path.resolve("./examples/stylus");
@@ -17,9 +18,9 @@ describe("stylus", () => {
       "stylus",
       ["./main.styl"],
       {
-        pluginOptions: {
+        plugins: [postCSSPlugin({
           preprocessors: [stylusPreprocessor()],
-        },
+        })],
       },
     );
     assertObjectMatch(result, {
@@ -44,12 +45,10 @@ describe("stylus", () => {
       "stylus",
       ["./main.ts"],
       {
-        pluginOptions: {
+        plugins: [postCSSPlugin({
           preprocessors: [stylusPreprocessor()],
-        },
-        esbuildOptions: {
-          bundle: true,
-        },
+        })],
+        bundle: true,
       },
     );
     assertObjectMatch(result, {

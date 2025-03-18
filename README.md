@@ -28,6 +28,119 @@ entrypoint, the plugin will output the css to a file. When the styles are
 imported from a JavaScript/TypeScript file, the plugin will output a js file
 with the css as a constant along with any css module class names from the file.
 
+### Using with esbuild deno loader plugin
+
+This plugin can be used with the esbuild Deno loader to process CSS files during
+bundling. The esbuild Deno loader is a plugin that allows esbuild to import
+Deno-specific modules and handle Deno's import/export syntax.
+
+> **Note:** The official `@luca/esbuild-deno-loader` package has compatibility
+> issues with other plugins (see
+> [Issue #159](https://github.com/lucacasonato/esbuild_deno_loader/issues/159)).
+> Until [PR #160](https://github.com/lucacasonato/esbuild_deno_loader/pull/160)
+> is merged into the official repository, it's recommended to use the
+> `@kylejune/esbuild-deno-loader` fork which fixes this compatibility issue.
+
+Here's an example of how to use this plugin with the esbuild Deno loader:
+
+```ts
+import * as esbuild from "esbuild";
+import {
+  denoLoaderPlugin,
+  denoResolverPlugin,
+} from "@kylejune/esbuild-deno-loader";
+import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
+
+await esbuild.build({
+  plugins: [
+    denoResolverPlugin({ configPath }),
+    postCSSPlugin({ modules: true }),
+    denoLoaderPlugin({ configPath }),
+  ],
+  entryPoints: ["./src/main.ts"],
+  outdir: "./dist",
+  bundle: true,
+  format: "esm",
+});
+esbuild.stop();
+```
+
+Alternatively, you could remap @luca/esbuild-deno-loader to
+@kylejune/esbuild-deno-loader with the following import map entry in your deno
+configuration file. This will make it so that you can easily switch back to
+using jsr:@luca/esbuild-deno-loader by just changing this line in your import
+map..
+
+```json
+{
+  "imports": {
+    "@lucaesbuild-deno-loader": "jsr:@kylejune/esbuild-deno-loader@0.12"
+  }
+}
+```
+
+When using the esbuild Deno loader with this plugin, make sure to:
+
+1. Put the deno resolver plugin before the PostCSS plugin in the plugins array.
+2. Put the deno loader plugin after the PostCSS plugin in the plugins array.
+
+This is needed so that your style sheets will use deno to resolve the paths to
+import.
+
+For example, if you're using tailwindcss, you'd have the following import
+statement. It would use the tailwindcss referenced in your deno configuration
+file's import map.
+
+```css
+@import "tailwindcss";
+```
+
+In this example, "tailwindcss" would resolve to "npm:tailwindcss@4" if you're
+deno configuration had the following import map in it.
+
+```json
+{
+  "imports": {
+    "tailwindcss": "npm:tailwindcss@4"
+  }
+}
+```
+
+For configuring postcss, you can either configure it from your build script like
+in all of the other examples, or you could create a `postcss.config.ts` file and
+use that with the plugin.
+
+The following is an example of a `postcss.config.ts` file.
+
+```ts
+import { PostCSSPluginOptions } from "@udibo/esbuild-plugin-postcss";
+
+export default {
+  modules: true,
+} satisfies PostCSSPluginOptions;
+```
+
+Then here is an example of using that configuration file for configuring this
+postcss plugin.
+
+```ts
+import esbuild from "esbuild";
+import tailwindcss from "tailwindcss";
+import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
+
+import postcssConfig from "./tailwind.config.ts";
+
+esbuild.build({
+  plugins: [
+    postCSSPlugin(postcssConfig),
+  ],
+  entryPoints: ["./src/index.css"],
+  outdir: "./dist",
+  bundle: true,
+});
+esbuild.stop();
+```
+
 ### PostCSS plugins
 
 This plugin supports PostCSS plugins. You can pass in a PostCSS plugins through
@@ -93,6 +206,107 @@ The output would look like this in the `./dist/index.css` file:
   }
 }
 ```
+
+#### Tailwindcss v3
+
+This plugin works with Tailwind CSS v3. To use Tailwind CSS with this plugin,
+you need to add the tailwindcss plugin to the PostCSS plugins array.
+
+```ts
+import esbuild from "esbuild";
+import tailwindcss from "tailwindcss";
+import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
+
+esbuild.build({
+  plugins: [
+    postCSSPlugin({
+      plugins: [
+        tailwindcss({
+          content: ["./src/**/*.{html,js,ts,jsx,tsx}"],
+          theme: {
+            extend: {},
+          },
+          plugins: [],
+        }),
+      ],
+    }),
+  ],
+  entryPoints: ["./src/index.css"],
+  outdir: "./dist",
+  bundle: true,
+});
+esbuild.stop();
+```
+
+You can also create a `tailwind.config.ts` file and use that with the plugin.
+
+```ts
+import esbuild from "esbuild";
+import tailwindcss from "tailwindcss";
+import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
+
+import tailwindConfig from "./tailwind.config.ts";
+
+esbuild.build({
+  plugins: [
+    postCSSPlugin({
+      plugins: [
+        tailwindcss(tailwindConfig),
+      ],
+    }),
+  ],
+  entryPoints: ["./src/index.css"],
+  outdir: "./dist",
+  bundle: true,
+});
+esbuild.stop();
+```
+
+Then in your main.css file, you would import tailwinds base, components, and
+utilities.
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+#### Tailwindcss v4
+
+Tailwind CSS v4 requires a slightly different setup as it has integrated its own
+PostCSS plugin. To use Tailwind CSS v4 with this plugin, follow this approach:
+
+```ts
+import esbuild from "esbuild";
+import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
+import { tailwindcss } from "@tailwindcss/postcss";
+
+esbuild.build({
+  plugins: [
+    postCSSPlugin({
+      plugins: [
+        tailwindcss(),
+      ],
+    }),
+  ],
+  entryPoints: ["./src/index.css"],
+  outdir: "./dist",
+  bundle: true,
+});
+esbuild.stop();
+```
+
+In tailwindcss v4, the configuration is in css. When you import tailwindcss, it
+includes the base, components, and utilities.
+
+```css
+@import "tailwindcss";
+```
+
+To have those imports and plugins use Deno's resolution and import map, you'll
+need to use the esbuild deno loader plugin. See
+[Using with esbuild deno loader plugin documentation](#using-with-esbuild-deno-loader-plugin)
+for more information.
 
 ### CSS Modules
 
