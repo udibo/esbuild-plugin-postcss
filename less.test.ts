@@ -8,6 +8,7 @@ import { describe, it } from "@std/testing/bdd";
 
 import { lessPreprocessor } from "./less.ts";
 import { build } from "./test-utils.ts";
+import { postCSSPlugin } from "./postcss.ts";
 
 describe("less", () => {
   const rootDir = path.resolve("./examples/less");
@@ -17,9 +18,9 @@ describe("less", () => {
       "less",
       ["./main.less"],
       {
-        pluginOptions: {
+        plugins: [postCSSPlugin({
           preprocessors: [lessPreprocessor()],
-        },
+        })],
       },
     );
     assertObjectMatch(result, {
@@ -44,12 +45,10 @@ describe("less", () => {
       "less",
       ["./main.ts"],
       {
-        pluginOptions: {
+        plugins: [postCSSPlugin({
           preprocessors: [lessPreprocessor()],
-        },
-        esbuildOptions: {
-          bundle: true,
-        },
+        })],
+        bundle: true,
       },
     );
     assertObjectMatch(result, {

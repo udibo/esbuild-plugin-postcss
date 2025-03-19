@@ -7,7 +7,7 @@ import type {
   Plugin,
 } from "esbuild";
 import postcss from "postcss";
-import type { Message, Plugin as PostCSSPlugin } from "postcss";
+import type { AcceptedPlugin, Message } from "postcss";
 import postCSSModules from "postcss-modules";
 
 /**
@@ -42,7 +42,7 @@ export type LocalsConventionFunction = (
  * A loader for postcss modules.
  */
 export class PostCSSModuleLoader {
-  constructor(_root: string, _plugins: PostCSSPlugin[]) {}
+  constructor(_root: string, _plugins: AcceptedPlugin[]) {}
 
   /**
    * Fetch the class names from the file.
@@ -169,7 +169,7 @@ export interface PostCSSPluginOptions {
    * If you include the postcss-module plugin in that list, set modules to false
    * so that it is used instead of the default postcss-module.
    */
-  plugins?: PostCSSPlugin[];
+  plugins?: AcceptedPlugin[];
   /**
    * Configure whether or not the postcss-modules is added to the beginning of the list of plugins.
    * If this is an object, it will be used as the postcss-module's plugin options.

@@ -8,6 +8,7 @@ import { describe, it } from "@std/testing/bdd";
 
 import { sassPreprocessor } from "./sass.ts";
 import { build } from "./test-utils.ts";
+import { postCSSPlugin } from "./postcss.ts";
 
 describe("sass", () => {
   const rootDir = path.resolve("./examples/sass");
@@ -18,9 +19,9 @@ describe("sass", () => {
         "sass",
         ["./a.scss"],
         {
-          pluginOptions: {
+          plugins: [postCSSPlugin({
             preprocessors: [sassPreprocessor()],
-          },
+          })],
         },
       );
       assertObjectMatch(result, {
@@ -45,12 +46,10 @@ describe("sass", () => {
         "sass",
         ["./a.ts"],
         {
-          pluginOptions: {
+          plugins: [postCSSPlugin({
             preprocessors: [sassPreprocessor()],
-          },
-          esbuildOptions: {
-            bundle: true,
-          },
+          })],
+          bundle: true,
         },
       );
       assertObjectMatch(result, {
@@ -77,9 +76,9 @@ describe("sass", () => {
         "sass",
         ["./b.sass"],
         {
-          pluginOptions: {
+          plugins: [postCSSPlugin({
             preprocessors: [sassPreprocessor()],
-          },
+          })],
         },
       );
       assertObjectMatch(result, {
@@ -104,12 +103,10 @@ describe("sass", () => {
         "sass",
         ["./b.ts"],
         {
-          pluginOptions: {
+          plugins: [postCSSPlugin({
             preprocessors: [sassPreprocessor()],
-          },
-          esbuildOptions: {
-            bundle: true,
-          },
+          })],
+          bundle: true,
         },
       );
       assertObjectMatch(result, {

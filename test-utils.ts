@@ -2,9 +2,6 @@ import { delay } from "@std/async/delay";
 import * as path from "@std/path";
 import esbuild from "esbuild";
 
-import { postCSSPlugin } from "./postcss.ts";
-import type { PostCSSPluginOptions } from "./postcss.ts";
-
 function getSnapshotMode() {
   return Deno.args.some((arg) => arg === "--update" || arg === "-u")
     ? "update"
@@ -22,19 +19,15 @@ function getSnapshotMode() {
 export async function build(
   example: string,
   entryPoints: string[],
-  options: {
-    pluginOptions?: PostCSSPluginOptions;
-    esbuildOptions?: esbuild.BuildOptions;
-  } = {},
+  options: esbuild.BuildOptions,
 ) {
-  const plugin = postCSSPlugin(options.pluginOptions);
   const buildOptions = {
-    plugins: [plugin],
     entryPoints: entryPoints,
     outdir: "out",
     absWorkingDir: path.resolve(`./examples/${example}`),
-    ...options.esbuildOptions,
-  };
+    format: "esm",
+    ...options,
+  } as esbuild.BuildOptions;
   const result = await esbuild.build({
     ...buildOptions,
     write: false,
