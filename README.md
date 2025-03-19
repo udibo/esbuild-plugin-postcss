@@ -106,7 +106,7 @@ import { PostCSSPluginOptions } from "@udibo/esbuild-plugin-postcss";
 
 export default {
   modules: true,
-} satisfies PostCSSPluginOptions;
+} as PostCSSPluginOptions;
 ```
 
 Then here is an example of using that configuration file for configuring this
