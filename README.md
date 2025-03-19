@@ -41,14 +41,15 @@ Deno-specific modules and handle Deno's import/export syntax.
 > is merged into the official repository, it's recommended to use the
 > `@kylejune/esbuild-deno-loader` fork which fixes this compatibility issue.
 
-Here's an example of how to use this plugin with the esbuild Deno loader:
+Below is an example of how to use this esbuild postcss plugin with the esbuild
+Deno loader:
 
 ```ts
 import * as esbuild from "esbuild";
 import {
   denoLoaderPlugin,
   denoResolverPlugin,
-} from "@kylejune/esbuild-deno-loader";
+} from "@luca/esbuild-deno-loader";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 await esbuild.build({
@@ -65,20 +66,6 @@ await esbuild.build({
 esbuild.stop();
 ```
 
-Alternatively, you could remap @luca/esbuild-deno-loader to
-@kylejune/esbuild-deno-loader with the following import map entry in your deno
-configuration file. This will make it so that you can easily switch back to
-using jsr:@luca/esbuild-deno-loader by just changing this line in your import
-map..
-
-```json
-{
-  "imports": {
-    "@lucaesbuild-deno-loader": "jsr:@kylejune/esbuild-deno-loader@0.12"
-  }
-}
-```
-
 When using the esbuild Deno loader with this plugin, make sure to:
 
 1. Put the deno resolver plugin before the PostCSS plugin in the plugins array.
@@ -88,15 +75,15 @@ This is needed so that your style sheets will use deno to resolve the paths to
 import.
 
 For example, if you're using tailwindcss, you'd have the following import
-statement. It would use the tailwindcss referenced in your deno configuration
-file's import map.
+statement in your main style sheet. It would use the tailwindcss referenced in
+your deno configuration file's import map.
 
 ```css
 @import "tailwindcss";
 ```
 
 In this example, "tailwindcss" would resolve to "npm:tailwindcss@4" if you're
-deno configuration had the following import map in it.
+deno configuration had the following import mapping in it.
 
 ```json
 {
@@ -105,6 +92,8 @@ deno configuration had the following import map in it.
   }
 }
 ```
+
+#### Separating postcss configuration from esbuild configuration
 
 For configuring postcss, you can either configure it from your build script like
 in all of the other examples, or you could create a `postcss.config.ts` file and
