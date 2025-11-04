@@ -1,4 +1,4 @@
-# esbuild PostCSS Plugin
+# PostCSS esbuild plugin
 
 [![JSR](https://jsr.io/badges/@udibo/esbuild-plugin-postcss)](https://jsr.io/@udibo/esbuild-plugin-postcss)
 [![JSR Score](https://jsr.io/badges/@udibo/esbuild-plugin-postcss/score)](https://jsr.io/@udibo/esbuild-plugin-postcss)
@@ -34,29 +34,18 @@ This plugin can be used with the esbuild Deno loader to process CSS files during
 bundling. The esbuild Deno loader is a plugin that allows esbuild to import
 Deno-specific modules and handle Deno's import/export syntax.
 
-> **Note:** The official `@luca/esbuild-deno-loader` package has compatibility
-> issues with other plugins (see
-> [Issue #159](https://github.com/lucacasonato/esbuild_deno_loader/issues/159)).
-> Until [PR #160](https://github.com/lucacasonato/esbuild_deno_loader/pull/160)
-> is merged into the official repository, it's recommended to use the
-> `@kylejune/esbuild-deno-loader` fork which fixes this compatibility issue.
-
 Below is an example of how to use this esbuild postcss plugin with the esbuild
 Deno loader:
 
 ```ts
 import * as esbuild from "esbuild";
-import {
-  denoLoaderPlugin,
-  denoResolverPlugin,
-} from "@luca/esbuild-deno-loader";
+import { denoPlugin } from "@deno/esbuild-plugin";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 await esbuild.build({
   plugins: [
-    denoResolverPlugin({ configPath }),
     postCSSPlugin({ modules: true }),
-    denoLoaderPlugin({ configPath }),
+    denoPlugin({ configPath }),
   ],
   entryPoints: ["./src/main.ts"],
   outdir: "./dist",
@@ -66,13 +55,12 @@ await esbuild.build({
 esbuild.stop();
 ```
 
-When using the esbuild Deno loader with this plugin, make sure to:
+When using the esbuild Deno loader with this plugin, make sure to put the deno
+plugin after the PostCSS plugin in the plugins array.
 
-1. Put the deno resolver plugin before the PostCSS plugin in the plugins array.
-2. Put the deno loader plugin after the PostCSS plugin in the plugins array.
-
-This is needed so that your style sheets will use deno to resolve the paths to
-import.
+This is needed so that your esbuild entryPoints will resolve relative to
+esbuild's absWorkingDir rather than relative to the directory of your deno.json
+file.
 
 For example, if you're using tailwindcss, you'd have the following import
 statement in your main style sheet. It would use the tailwindcss referenced in

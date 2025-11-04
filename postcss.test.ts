@@ -6,10 +6,7 @@ import {
 import * as path from "@std/path";
 import { describe, it } from "@std/testing/bdd";
 import { assertSnapshot } from "@std/testing/snapshot";
-import {
-  denoLoaderPlugin,
-  denoResolverPlugin,
-} from "@luca/esbuild-deno-loader";
+import { denoPlugin } from "@deno/esbuild-plugin";
 import type postcss from "postcss";
 import autoprefixer from "autoprefixer";
 import tailwindcss3 from "tailwindcss3";
@@ -341,18 +338,17 @@ describe("plugins", () => {
 
   describe("tailwindcss 4", () => {
     const rootDir = path.resolve("./examples/tailwindcss4");
-    const configPath = path.resolve("./deno.json");
+    const configPath = path.resolve(Deno.cwd(), "deno.json");
 
     it("should add tailwindcss to the css", async () => {
       const result = await build("tailwindcss4", ["./main.css"], {
         plugins: [
-          denoResolverPlugin({ configPath }),
           postCSSPlugin({
             plugins: [
               tailwindcss(),
             ],
           }),
-          denoLoaderPlugin({ configPath }),
+          denoPlugin({ configPath }),
         ],
       });
       assertObjectMatch(result, {
