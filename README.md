@@ -44,8 +44,8 @@ import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 await esbuild.build({
   plugins: [
-    denoPlugin({ configPath }),
     postCSSPlugin({ modules: true }),
+    denoPlugin({ configPath }),
   ],
   entryPoints: ["./src/main.ts"],
   outdir: "./dist",
@@ -55,12 +55,12 @@ await esbuild.build({
 esbuild.stop();
 ```
 
-When using the esbuild Deno loader with this plugin, make sure to:
+When using the esbuild Deno loader with this plugin, make sure to put the deno
+plugin after the PostCSS plugin in the plugins array.
 
-1. Put the deno plugin before the PostCSS plugin in the plugins array.
-
-This is needed so that your style sheets will use deno to resolve the paths to
-import.
+This is needed so that your esbuild entryPoints will resolve relative to
+esbuild's absWorkingDir rather than relative to the directory of your deno.json
+file.
 
 For example, if you're using tailwindcss, you'd have the following import
 statement in your main style sheet. It would use the tailwindcss referenced in

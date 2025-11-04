@@ -343,12 +343,12 @@ describe("plugins", () => {
     it("should add tailwindcss to the css", async () => {
       const result = await build("tailwindcss4", ["./main.css"], {
         plugins: [
-          denoPlugin({ configPath, debug: true }),
           postCSSPlugin({
             plugins: [
               tailwindcss(),
             ],
           }),
+          denoPlugin({ configPath }),
         ],
       });
       assertObjectMatch(result, {
