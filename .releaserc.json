@@ -1,0 +1,64 @@
+{
+  "branches": ["main"],
+  "tagFormat": "${version}",
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "angular",
+        "releaseRules": [
+          { "breaking": true, "release": "major" },
+          { "revert": true, "release": "patch" },
+          { "type": "feat", "release": "minor" },
+          { "type": "fix", "release": "patch" },
+          { "type": "perf", "release": "patch" },
+          { "type": "revert", "release": "patch" },
+          { "type": "build", "scope": "deps", "release": "patch" },
+          { "type": "chore", "scope": "deps", "release": "patch" }
+        ]
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator",
+      {
+        "preset": "angular",
+        "writerOpts": {
+          "commitsSort": ["subject", "scope"]
+        }
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "deno fmt CHANGELOG.md"
+      }
+    ],
+    [
+      "@sebbo2002/semantic-release-jsr",
+      {
+        "configFile": "deno.json",
+        "allowDirty": true,
+        "publishArgs": ["--no-check"]
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": []
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md", "deno.lock", "deno.json"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ]
+  ]
+}
