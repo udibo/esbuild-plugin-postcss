@@ -6,6 +6,8 @@ import {
 import * as path from "@std/path";
 import { describe, it } from "@std/testing/bdd";
 
+import * as sass from "sass";
+
 import { sassPreprocessor } from "./sass.ts";
 import { build } from "./test-utils.ts";
 import { postCSSPlugin } from "./postcss.ts";
@@ -20,7 +22,7 @@ describe("sass", () => {
         ["./a.scss"],
         {
           plugins: [postCSSPlugin({
-            preprocessors: [sassPreprocessor()],
+            preprocessors: [sassPreprocessor(sass)],
           })],
         },
       );
@@ -47,7 +49,7 @@ describe("sass", () => {
         ["./a.ts"],
         {
           plugins: [postCSSPlugin({
-            preprocessors: [sassPreprocessor()],
+            preprocessors: [sassPreprocessor(sass)],
           })],
           bundle: true,
         },
@@ -77,7 +79,7 @@ describe("sass", () => {
         ["./b.sass"],
         {
           plugins: [postCSSPlugin({
-            preprocessors: [sassPreprocessor()],
+            preprocessors: [sassPreprocessor(sass)],
           })],
         },
       );
@@ -104,7 +106,7 @@ describe("sass", () => {
         ["./b.ts"],
         {
           plugins: [postCSSPlugin({
-            preprocessors: [sassPreprocessor()],
+            preprocessors: [sassPreprocessor(sass)],
           })],
           bundle: true,
         },
