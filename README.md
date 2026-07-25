@@ -417,26 +417,34 @@ The 3 preprocessors available are:
 - Less: A backwards-compatible language extension for CSS.
 - Stylus: An expressive, dynamic, and robust CSS language.
 
-To use a preprocessor, you will have to import the wrapper for the preprocessor
-from this esbuild plugin. These wrappers are stored in separate files so that
-the preprocessors are only imported when you use them.
+To use a preprocessor, import its wrapper from this plugin **and add the
+preprocessor itself to your own dependencies**, then pass the module in:
 
 - `@udibo/esbuild-plugin-postcss/sass`: Exports the `sassPreprocessor` function.
 - `@udibo/esbuild-plugin-postcss/less`: Exports the `lessPreprocessor` function.
 - `@udibo/esbuild-plugin-postcss/stylus`: Exports the `stylusPreprocessor`
   function.
 
-Each of these functions take a single argument, which is the options for the
-preprocessor. To learn more about the preprocessors and the options for them,
-see the [Sass documentation](https://sass-lang.com/documentation/js-api),
+`sass`, `less`, and `stylus` are deliberately **not** dependencies of this
+package. JSR resolves a package's dependencies as one flat set across every
+export, so importing them here would install all three for everyone — including
+projects that only build plain CSS. Passing the module in keeps them optional:
+you depend on exactly the preprocessors you use, at whatever version you choose.
+
+Each function takes the preprocessor module first, then its options. To learn
+more about the preprocessors and their options, see the
+[Sass documentation](https://sass-lang.com/documentation/js-api),
 [Less documentation](https://lessjs.org/api/), and
-[Stylus documentation](https://stylus-lang.com/docs/js-api).
+[Stylus documentation](https://stylus-lang.com/docs/js-api). Annotate `options`
+with the preprocessor's own option type to keep full type checking, for example
+`sassPreprocessor<sass.Options<"async">>(sass, { ... })`.
 
 You can use one or more of these preprocessors in the preprocessors array. Below
 is an example of using the Sass preprocessor with the default options for it.
 
 ```ts
 import esbuild from "esbuild";
+import * as sass from "sass";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 import { sassPreprocessor } from "@udibo/esbuild-plugin-postcss/sass";
 
@@ -444,7 +452,7 @@ esbuild.build({
   plugins: [
     postCSSPlugin({
       preprocessors: [
-        sassPreprocessor(),
+        sassPreprocessor(sass),
       ],
     }),
   ],

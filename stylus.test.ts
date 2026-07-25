@@ -6,6 +6,8 @@ import {
 import * as path from "@std/path";
 import { describe, it } from "@std/testing/bdd";
 
+import stylus from "stylus";
+
 import { stylusPreprocessor } from "./stylus.ts";
 import { build } from "./test-utils.ts";
 import { postCSSPlugin } from "./postcss.ts";
@@ -19,7 +21,7 @@ describe("stylus", () => {
       ["./main.styl"],
       {
         plugins: [postCSSPlugin({
-          preprocessors: [stylusPreprocessor()],
+          preprocessors: [stylusPreprocessor(stylus)],
         })],
       },
     );
@@ -46,7 +48,7 @@ describe("stylus", () => {
       ["./main.ts"],
       {
         plugins: [postCSSPlugin({
-          preprocessors: [stylusPreprocessor()],
+          preprocessors: [stylusPreprocessor(stylus)],
         })],
         bundle: true,
       },

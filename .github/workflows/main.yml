@@ -10,3 +10,59 @@ jobs:
     uses: ./.github/workflows/ci.yml
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  release:
+    name: Release
+    needs: [ci]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Clone repository
+        # No deploy key: publishing to JSR is OIDC (id-token: write, package
+        # linked to this repo), and @semantic-release/git pushes the release
+        # commit with the checkout-persisted GITHUB_TOKEN, which `contents:
+        # write` covers. That push only needs an SSH deploy key if `main`
+        # becomes a protected branch — GITHUB_TOKEN cannot push past protection.
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+      # semantic-release runs on Node, not Deno: @sebbo2002/semantic-release-jsr
+      # shell-spawns its own downloaded `deno publish`, and that spawn's args are
+      # mangled by Deno's child_process Node-compat layer (the publish fails with
+      # "unrecognized subcommand"). Under real Node the plugin works as designed.
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Setup Deno
+        uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2
+        with:
+          deno-version: v2.x
+          # No shared dependency cache on the publish job: it is the only job
+          # with id-token: write, so it must not restore a cache another job
+          # could have populated.
+          cache: false
+      - name: Install dependencies
+        run: deno ci
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Every package is pinned to an exact version so a malicious new release
+        # of a popular package can't execute here while id-token: write is active
+        # — npx has no lockfile, so the version IS the pin. @sebbo2002/semantic-
+        # release-jsr stays 3.2.1 because 4.0.0 ships a CJS bundle semantic-release
+        # rejects as EPLUGINSCONF (https://github.com/sebbo2002/semantic-release-jsr/issues/153).
+        # Bump these deliberately.
+        run: >-
+          npx
+          --package semantic-release@25.0.5
+          --package @semantic-release/changelog@6.0.3
+          --package @semantic-release/exec@7.1.0
+          --package @semantic-release/git@10.0.1
+          --package @semantic-release/github@12.0.8
+          --package @sebbo2002/semantic-release-jsr@3.2.1
+          semantic-release

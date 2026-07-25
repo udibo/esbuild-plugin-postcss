@@ -6,6 +6,8 @@ import {
 import * as path from "@std/path";
 import { describe, it } from "@std/testing/bdd";
 
+import less from "less";
+
 import { lessPreprocessor } from "./less.ts";
 import { build } from "./test-utils.ts";
 import { postCSSPlugin } from "./postcss.ts";
@@ -19,7 +21,7 @@ describe("less", () => {
       ["./main.less"],
       {
         plugins: [postCSSPlugin({
-          preprocessors: [lessPreprocessor()],
+          preprocessors: [lessPreprocessor(less)],
         })],
       },
     );
@@ -46,7 +48,7 @@ describe("less", () => {
       ["./main.ts"],
       {
         plugins: [postCSSPlugin({
-          preprocessors: [lessPreprocessor()],
+          preprocessors: [lessPreprocessor(less)],
         })],
         bundle: true,
       },
