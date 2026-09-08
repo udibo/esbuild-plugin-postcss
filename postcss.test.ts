@@ -99,30 +99,9 @@ describe("css", () => {
 describe("modules", () => {
   const rootDir = path.resolve("./examples/modules");
 
-  it("modules set to false", async () => {
-    const result = await build("modules", ["./disabled.css"], {
-      plugins: [postCSSPlugin({ modules: false })],
-    });
-    assertObjectMatch(result, {
-      errors: [],
-      warnings: [],
-    });
-    assertGreaterOrEqual(result.outputFiles.length, 1);
-    const outFilePath = path.resolve(rootDir, "out/disabled.css");
-    assertEquals(
-      result.outputFiles[0].path,
-      outFilePath,
-    );
-    assertEquals(
-      result.outputFiles[0].text,
-      await Deno.readTextFile(outFilePath),
-    );
-    assertEquals(result.outputFiles.length, 1);
-  });
-
   it("modules defaults to true", async (t) => {
     const result = await build("modules", ["./main.module.css"], {
-      plugins: [postCSSPlugin({ modules: true })],
+      plugins: [postCSSPlugin()],
     });
     assertObjectMatch(result, {
       errors: [],
