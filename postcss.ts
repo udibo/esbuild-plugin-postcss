@@ -253,11 +253,19 @@ export const postCSSPlugin = (
         }
 
         const absolutePath = path.resolve(args.resolveDir, args.path);
+        const relativePath = path.relative(
+          build.initialOptions.absWorkingDir ?? Deno.cwd(),
+          absolutePath,
+        );
+        const stylesheetId = Deno.build.os === "windows"
+          ? relativePath.replaceAll("\\", "/")
+          : relativePath;
         const ext = path.extname(absolutePath);
         const sourceBaseName = path.basename(absolutePath, ext);
-        const module = isModule
-          ? isModule(absolutePath)
-          : sourceBaseName.match(/\.module$/);
+        const module = modules !== false &&
+          (isModule
+            ? isModule(absolutePath)
+            : /\.module$/.test(sourceBaseName));
 
         const fileContent = await Deno.readTextFile(absolutePath);
         let css = ext === ".css" ? fileContent : "";
@@ -287,7 +295,7 @@ export const postCSSPlugin = (
 
         return {
           namespace: module ? "postcss-module" : "postcss",
-          path: args.path,
+          path: `./${stylesheetId}`,
           watchFiles,
           pluginData: {
             resolveDir: args.resolveDir,
