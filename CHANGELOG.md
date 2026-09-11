@@ -1,3 +1,5 @@
+## [0.4.2](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.1...0.4.2) (2026-09-11)
+
 ## [0.4.1](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.0...0.4.1) (2026-09-08)
 
 ### Bug Fixes
