@@ -11,12 +11,12 @@ import type { AcceptedPlugin, Message } from "postcss";
 import postCSSModules from "postcss-modules";
 
 /**
- * Generate a scoped name for a class.
+ * Builds the scoped class name postcss-modules emits for a local class.
  *
- * @param name - The name of the class.
- * @param filename - The filename of the file.
- * @param css - The css of the file.
- * @returns The scoped name.
+ * @param name - The class name as written in the stylesheet.
+ * @param filename - The absolute path of the stylesheet being processed.
+ * @param css - The stylesheet's source.
+ * @returns The class name to use in the generated CSS.
  */
 export type GenerateScopedNameFunction = (
   name: string,
@@ -25,12 +25,12 @@ export type GenerateScopedNameFunction = (
 ) => string;
 
 /**
- * Locals convention function.
+ * Chooses the key a class is exported under in the class-name map.
  *
- * @param originalClassName - The original class name.
- * @param generatedClassName - The generated class name.
- * @param inputFile - The input file.
- * @returns The scoped name.
+ * @param originalClassName - The class name as written in the stylesheet.
+ * @param generatedClassName - The scoped class name postcss-modules generated.
+ * @param inputFile - The absolute path of the stylesheet being processed.
+ * @returns The export key for the class.
  */
 export type LocalsConventionFunction = (
   originalClassName: string,
@@ -39,18 +39,29 @@ export type LocalsConventionFunction = (
 ) => string;
 
 /**
- * A loader for postcss modules.
+ * The class shape postcss-modules expects for its `Loader` option, which loads
+ * the files named in `composes: … from "…"`.
+ *
+ * This class only describes that shape: it loads nothing and resolves every
+ * fetch to an empty map. Set {@linkcode PostCSSModulesOptions.Loader} to a
+ * class of your own with these members, not to this one.
  */
 export class PostCSSModuleLoader {
+  /**
+   * Creates a loader for one CSS module.
+   *
+   * @param _root - The root directory composed paths resolve against.
+   * @param _plugins - The PostCSS plugins to run on each loaded file.
+   */
   constructor(_root: string, _plugins: AcceptedPlugin[]) {}
 
   /**
-   * Fetch the class names from the file.
+   * Loads a composed stylesheet and returns its class-name map.
    *
-   * @param file - The file.
-   * @param relativeTo - The relative to.
-   * @param depTrace - The dependency trace.
-   * @returns The class names.
+   * @param _file - The path named in the `composes` rule.
+   * @param _relativeTo - The path of the stylesheet containing the rule.
+   * @param _depTrace - A key that orders this file's CSS within `finalSource`.
+   * @returns The composed file's class names keyed by original name.
    */
   fetch(
     _file: string,
@@ -60,21 +71,28 @@ export class PostCSSModuleLoader {
     return Promise.resolve({});
   }
 
-  /** The final source. */
+  /** The CSS of every composed file loaded, prepended to the module's output. */
   finalSource?: string | undefined;
 }
 
 /**
- * Options for postcss modules.
+ * Options passed through to postcss-modules for files treated as CSS modules.
  */
 export interface PostCSSModulesOptions {
-  /** Get the json from the file. */
+  /**
+   * Receives each module's class-name map once it is processed. When omitted,
+   * the plugin writes the map as JSON to `<stylesheet path>.json` next to the
+   * source file; supplying this replaces that write.
+   */
   getJSON?(
     cssFilename: string,
     json: { [name: string]: string },
     outputFilename?: string,
   ): void;
-  /** Style of exported class names. */
+  /**
+   * How class names are transformed into keys of the class-name map, such as
+   * camel-casing `my-class` to `myClass`. Defaults to the names as written.
+   */
   localsConvention?:
     | "camelCase"
     | "camelCaseOnly"
@@ -82,39 +100,44 @@ export interface PostCSSModulesOptions {
     | "dashesOnly"
     | LocalsConventionFunction;
 
-  /** Behavior of the scope. by default it is local. */
+  /** Whether class names are scoped by default. Defaults to `"local"`. */
   scopeBehaviour?: "global" | "local";
 
-  /** Paths to modules that should be treated as global. */
+  /** Stylesheet paths whose class names are left unscoped. */
   globalModulePaths?: RegExp[];
 
-  /** Style of exported class names. */
+  /**
+   * The pattern (such as `"[name]__[local]___[hash:base64:5]"`) or function
+   * that produces each scoped class name.
+   */
   generateScopedName?: string | GenerateScopedNameFunction;
 
-  /** Prefix for the hash. */
+  /** A string mixed into the hash of generated class names. */
   hashPrefix?: string;
 
-  /** Whether to export globals. */
+  /** Whether `:global` class names are also included in the class-name map. */
   exportGlobals?: boolean;
 
-  /** The root of the module. */
+  /**
+   * The root directory the `Loader` resolves composed paths against. Defaults
+   * to `/`.
+   */
   root?: string;
 
-  /** The loader for the postcss modules. */
+  /** The class that loads stylesheets named in `composes: … from "…"`. */
   Loader?: typeof PostCSSModuleLoader;
 
-  /** Resolve the file. */
+  /**
+   * Resolves the path in `composes: … from "…"` to an absolute path, given the
+   * importing stylesheet's path. A relative return value throws; return `null`
+   * to fall back to the default resolution.
+   */
   resolve?: (
     file: string,
     importer: string,
   ) => string | null | Promise<string | null>;
 }
 
-/**
- * Get the files recursively from the directory.
- *
- * @returns an array of strings
- */
 function getFilesRecursive(directory: string): string[] {
   return [...Deno.readDirSync(directory)].reduce<string[]>((files, file) => {
     const name = path.join(directory, file.name);
@@ -125,11 +148,6 @@ function getFilesRecursive(directory: string): string[] {
   }, []);
 }
 
-/**
- * Get the dependencies from the postcss messages.
- *
- * @returns an array of strings
- */
 function getPostCSSDependencies(messages: Message[]): string[] {
   const dependencies: string[] = [];
   for (const message of messages) {
@@ -143,20 +161,38 @@ function getPostCSSDependencies(messages: Message[]): string[] {
 }
 
 /**
- * The results of a preprocessor.
+ * What a {@linkcode Preprocessor} returns for one file.
  */
 export interface PreprocessorResults {
+  /** The compiled CSS, which PostCSS then processes. */
   css: string;
+  /**
+   * Extra files, such as imported partials, that esbuild should watch for
+   * changes. The compiled file itself is always watched.
+   */
   watchFiles?: string[];
 }
 
 /**
- * A preprocessor for the PostCSS Plugin to use.
+ * Compiles a stylesheet language to CSS before PostCSS runs. The Less, Sass,
+ * and Stylus exports each build one; implement this to support another
+ * language.
  */
 export interface Preprocessor {
-  /** The path filter for the preprocessor. */
+  /**
+   * Selects the files this preprocessor compiles. It is tested against the
+   * file's extension including the dot (such as `".scss"`), not its full path.
+   * The plugin only resolves `.css`, `.sass`, `.scss`, `.less`, and `.styl`
+   * files.
+   */
   filter: RegExp;
-  /** Compile the file with the preprocessor. */
+  /**
+   * Compiles one file.
+   *
+   * @param path - The absolute path of the file.
+   * @param fileContent - The file's source.
+   * @returns The compiled CSS and any extra files to watch.
+   */
   compile(path: string, fileContent: string): Promise<PreprocessorResults>;
 }
 
@@ -165,29 +201,50 @@ export interface Preprocessor {
  */
 export interface PostCSSPluginOptions {
   /**
-   * Array of plugins for postcss.
-   * If you include the postcss-module plugin in that list, set modules to false
-   * so that it is used instead of the default postcss-module.
+   * The PostCSS plugins run on every stylesheet, in order.
+   *
+   * To run postcss-modules yourself, set `modules` to `false`. Every file is
+   * then treated as a plain stylesheet, so importing one exports only `css`
+   * and no class names.
    */
   plugins?: AcceptedPlugin[];
   /**
-   * Configure whether or not the postcss-modules is added to the beginning of the list of plugins.
-   * If this is an object, it will be used as the postcss-module's plugin options.
+   * Whether files matched by `isModule` are processed as CSS modules, with
+   * postcss-modules run before `plugins`. Pass an object to enable them with
+   * those postcss-modules options. `false` disables CSS modules entirely.
+   *
+   * Unless `getJSON` is supplied, each CSS module's class-name map is written
+   * to `<stylesheet path>.json` next to the source file.
    *
    * @default true
    */
   modules?: boolean | PostCSSModulesOptions;
   /**
-   * Determines if the file should be considered a postcss module.
-   * By default, only files with .module in their extension are considered postcss module.
+   * Decides from a file's absolute path whether it is a CSS module. Defaults to
+   * files named `*.module.<ext>`, such as `button.module.css`. Ignored when
+   * `modules` is `false`.
    */
   isModule?: (filename: string) => boolean;
+  /**
+   * Compilers for non-CSS stylesheet languages. Every preprocessor whose
+   * `filter` matches runs on the original source and the last one's CSS is
+   * used. A `.sass`, `.scss`, `.less`, or `.styl` file that no preprocessor
+   * matches compiles to an empty stylesheet.
+   */
   preprocessors?: Preprocessor[];
 }
 
 /**
- * The postcss plugin for esbuild.
+ * Creates an esbuild plugin that runs `.css`, `.sass`, `.scss`, `.less`, and
+ * `.styl` files through PostCSS, after any matching preprocessor.
  *
+ * A stylesheet imported with a JavaScript `import` statement becomes a module
+ * exporting the processed stylesheet as `css`; a CSS module also exports each
+ * class name as a named export (`import { title, css } from
+ * "./main.module.css"`). There is no default export. A stylesheet reached any
+ * other way, such as an entry point or a CSS `@import`, is emitted as CSS.
+ *
+ * @example Build a stylesheet
  * ```ts
  * import esbuild from "esbuild";
  * import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
@@ -234,14 +291,6 @@ export const postCSSPlugin = (
 
     build.onResolve(
       { filter: /\.(css|sass|scss|less|styl)$/ },
-      /**
-       * Handles resolving the path of a .css, .sass, .scss, .less, or .styl file.
-       * For non .css files, the file is preprocessed with the appropriate preprocessor.
-       * Then the postcss plugin is applied to the file.
-       *
-       * @param args - The arguments for the onResolve event.
-       * @returns The resolved path or null if the file is not a css file.
-       */
       async (
         args: OnResolveArgs,
       ): Promise<OnResolveResult | null | undefined> => {
@@ -309,20 +358,6 @@ export const postCSSPlugin = (
 
     build.onLoad(
       { filter: /.*/, namespace: "postcss-module" },
-      /**
-       * Handles loading of CSS modules, which contain both styles and class name mappings.
-       *
-       * For import statements (e.g., `import styles from './styles.module.css'`):
-       * - Returns a JS module that exports:
-       *   - Individual class name mappings (e.g., `export const button = "button_hash"`)
-       *   - The processed CSS as a string (`export const css = "..."`)
-       *
-       * For direct inclusion as an esbuild entrypoint:
-       * - Returns the processed CSS directly
-       *
-       * @param args - Contains pluginData with resolveDir, absolutePath, kind, and processed css
-       * @returns OnLoadResult with either JS module exports or raw CSS
-       */
       (args: OnLoadArgs): OnLoadResult => {
         const pluginData = args.pluginData;
         const absolutePath = pluginData.absolutePath as string;
@@ -345,19 +380,6 @@ export const postCSSPlugin = (
 
     build.onLoad(
       { filter: /.*/, namespace: "postcss" },
-      /**
-       * Handles loading of regular CSS files (non-modules).
-       *
-       * For import statements (e.g., `import './styles.css'`):
-       * - Returns a JS module that exports:
-       *   - The processed CSS as a string (`export const css = "..."`)
-       *
-       * For direct inclusion as an esbuild entrypoint:
-       * - Returns the processed CSS directly
-       *
-       * @param args - Contains pluginData with resolveDir, kind, and processed css
-       * @returns OnLoadResult with either JS module exports or raw CSS
-       */
       (args: OnLoadArgs): OnLoadResult => {
         const pluginData = args.pluginData;
         return {

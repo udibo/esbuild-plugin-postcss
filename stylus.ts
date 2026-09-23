@@ -16,6 +16,7 @@ import type { Preprocessor, PreprocessorResults } from "./postcss.ts";
  * satisfies it — `import stylus from "stylus"` and hand it over.
  */
 export interface StylusModule {
+  /** Compiles Stylus source to CSS, reporting through `callback`. */
   render(
     input: string,
     options: object,

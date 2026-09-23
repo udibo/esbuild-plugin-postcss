@@ -39,8 +39,11 @@ Deno loader:
 
 ```ts
 import * as esbuild from "esbuild";
+import * as path from "@std/path";
 import { denoPlugin } from "@deno/esbuild-plugin";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
+
+const configPath = path.resolve(Deno.cwd(), "deno.json");
 
 await esbuild.build({
   plugins: [
@@ -70,8 +73,8 @@ your deno configuration file's import map.
 @import "tailwindcss";
 ```
 
-In this example, "tailwindcss" would resolve to "npm:tailwindcss@4" if you're
-deno configuration had the following import mapping in it.
+In this example, "tailwindcss" would resolve to "npm:tailwindcss@4" if your deno
+configuration had the following import mapping in it.
 
 ```json
 {
@@ -102,10 +105,9 @@ postcss plugin.
 
 ```ts
 import esbuild from "esbuild";
-import tailwindcss from "tailwindcss";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
-import postcssConfig from "./tailwind.config.ts";
+import postcssConfig from "./postcss.config.ts";
 
 esbuild.build({
   plugins: [
@@ -256,7 +258,7 @@ PostCSS plugin. To use Tailwind CSS v4 with this plugin, follow this approach:
 ```ts
 import esbuild from "esbuild";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
-import { tailwindcss } from "@tailwindcss/postcss";
+import tailwindcss from "@tailwindcss/postcss";
 
 esbuild.build({
   plugins: [
