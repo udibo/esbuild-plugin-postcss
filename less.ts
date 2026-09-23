@@ -16,6 +16,7 @@ import type { Preprocessor, PreprocessorResults } from "./postcss.ts";
  * satisfies it — `import less from "less"` and hand it over.
  */
 export interface LessModule {
+  /** Compiles Less source to CSS. */
   render(
     input: string,
     options: object,

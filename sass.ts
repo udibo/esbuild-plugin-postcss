@@ -16,6 +16,7 @@ import type { Preprocessor, PreprocessorResults } from "./postcss.ts";
  * satisfies it — `import * as sass from "sass"` and hand it over.
  */
 export interface SassModule {
+  /** Compiles the Sass file at `path` to CSS and lists the files it loaded. */
   compileAsync(
     path: string,
     options?: object,
