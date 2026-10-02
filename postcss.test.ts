@@ -319,12 +319,12 @@ describe("plugins", () => {
     const rootDir = path.resolve("./examples/tailwindcss4");
     const configPath = path.resolve(Deno.cwd(), "deno.json");
 
-    it("should add tailwindcss to the css", async () => {
+    it("should add tailwindcss to the css", async (t) => {
       const result = await build("tailwindcss4", ["./main.css"], {
         plugins: [
           postCSSPlugin({
             plugins: [
-              tailwindcss(),
+              tailwindcss({ base: rootDir }),
             ],
           }),
           denoPlugin({ configPath }),
@@ -340,10 +340,7 @@ describe("plugins", () => {
         result.outputFiles[0].path,
         outFilePath,
       );
-      assertEquals(
-        result.outputFiles[0].text,
-        await Deno.readTextFile(outFilePath),
-      );
+      await assertSnapshot(t, result.outputFiles[0].text);
       assertEquals(result.outputFiles.length, 1);
     });
   });
