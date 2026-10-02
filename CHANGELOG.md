@@ -1,3 +1,12 @@
+## [0.4.3](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.2...0.4.3) (2026-10-02)
+
+### Bug Fixes
+
+- isolate nested package workspace
+  ([#16](https://github.com/udibo/esbuild-plugin-postcss/issues/16))
+  ([313e612](https://github.com/udibo/esbuild-plugin-postcss/commit/313e6120e9578928ef0b9c53d396ef39032986ad)),
+  closes [udibo/udibo#1676](https://github.com/udibo/udibo/issues/1676)
+
 ## [0.4.2](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.1...0.4.2) (2026-09-11)
 
 ## [0.4.1](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.0...0.4.1) (2026-09-08)
