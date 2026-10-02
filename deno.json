@@ -59,6 +59,7 @@
       "!examples/**/*.ts"
     ]
   },
+  "workspace": [],
   "nodeModulesDir": "auto",
   "imports": {
     "@deno/esbuild-plugin": "jsr:@deno/esbuild-plugin@^1.2.1",
