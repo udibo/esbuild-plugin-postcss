@@ -1,3 +1,12 @@
+## [0.4.4](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.3...0.4.4) (2026-10-03)
+
+### Bug Fixes
+
+- explain invalid CSS module exports
+  ([#19](https://github.com/udibo/esbuild-plugin-postcss/issues/19))
+  ([055ebf2](https://github.com/udibo/esbuild-plugin-postcss/commit/055ebf2a11e0a9148974ae72c92cbc1d40ea84dc)),
+  closes [#18](https://github.com/udibo/esbuild-plugin-postcss/issues/18)
+
 ## [0.4.3](https://github.com/udibo/esbuild-plugin-postcss/compare/0.4.2...0.4.3) (2026-10-02)
 
 ### Bug Fixes
