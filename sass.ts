@@ -35,14 +35,18 @@ export interface SassModule {
  * import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
  * import { sassPreprocessor } from "@udibo/esbuild-plugin-postcss/sass";
  *
- * esbuild.build({
- *   plugins: [postCSSPlugin({
- *     preprocessors: [sassPreprocessor(sass)],
- *   })],
- *   entryPoints: ["./src/index.scss"],
- *   outdir: "./dist",
- *   bundle: true,
- * });
+ * try {
+ *   await esbuild.build({
+ *     plugins: [postCSSPlugin({
+ *       preprocessors: [sassPreprocessor(sass)],
+ *     })],
+ *     entryPoints: ["./src/index.scss"],
+ *     outdir: "./dist",
+ *     bundle: true,
+ *   });
+ * } finally {
+ *   await esbuild.stop();
+ * }
  * ```
  *
  * @param sass - The `sass` module.

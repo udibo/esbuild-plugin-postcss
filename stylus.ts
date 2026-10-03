@@ -36,14 +36,18 @@ export interface StylusModule {
  * import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
  * import { stylusPreprocessor } from "@udibo/esbuild-plugin-postcss/stylus";
  *
- * esbuild.build({
- *   plugins: [postCSSPlugin({
- *     preprocessors: [stylusPreprocessor(stylus)],
- *   })],
- *   entryPoints: ["./src/index.styl"],
- *   outdir: "./dist",
- *   bundle: true,
- * });
+ * try {
+ *   await esbuild.build({
+ *     plugins: [postCSSPlugin({
+ *       preprocessors: [stylusPreprocessor(stylus)],
+ *     })],
+ *     entryPoints: ["./src/index.styl"],
+ *     outdir: "./dist",
+ *     bundle: true,
+ *   });
+ * } finally {
+ *   await esbuild.stop();
+ * }
  * ```
  *
  * @param stylus - The `stylus` module.
