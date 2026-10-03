@@ -35,14 +35,18 @@ export interface LessModule {
  * import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
  * import { lessPreprocessor } from "@udibo/esbuild-plugin-postcss/less";
  *
- * esbuild.build({
- *   plugins: [postCSSPlugin({
- *     preprocessors: [lessPreprocessor(less)],
- *   })],
- *   entryPoints: ["./src/index.less"],
- *   outdir: "./dist",
- *   bundle: true,
- * });
+ * try {
+ *   await esbuild.build({
+ *     plugins: [postCSSPlugin({
+ *       preprocessors: [lessPreprocessor(less)],
+ *     })],
+ *     entryPoints: ["./src/index.less"],
+ *     outdir: "./dist",
+ *     bundle: true,
+ *   });
+ * } finally {
+ *   await esbuild.stop();
+ * }
  * ```
  *
  * @param less - The `less` module.

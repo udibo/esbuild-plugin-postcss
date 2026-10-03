@@ -28,6 +28,9 @@ entrypoint, the plugin will output the css to a file. When the styles are
 imported from a JavaScript/TypeScript file, the plugin will output a js file
 with the css as a constant along with any css module class names from the file.
 
+For one-shot builds, await the build before stopping esbuild. Use `finally` to
+await cleanup even when compilation fails.
+
 ### Using with esbuild deno loader plugin
 
 This plugin can be used with the esbuild Deno loader to process CSS files during
@@ -45,17 +48,20 @@ import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 const configPath = path.resolve(Deno.cwd(), "deno.json");
 
-await esbuild.build({
-  plugins: [
-    postCSSPlugin({ modules: true }),
-    denoPlugin({ configPath }),
-  ],
-  entryPoints: ["./src/main.ts"],
-  outdir: "./dist",
-  bundle: true,
-  format: "esm",
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({ modules: true }),
+      denoPlugin({ configPath }),
+    ],
+    entryPoints: ["./src/main.ts"],
+    outdir: "./dist",
+    bundle: true,
+    format: "esm",
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 When using the esbuild Deno loader with this plugin, make sure to put the deno
@@ -109,15 +115,18 @@ import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 import postcssConfig from "./postcss.config.ts";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin(postcssConfig),
-  ],
-  entryPoints: ["./src/index.css"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin(postcssConfig),
+    ],
+    entryPoints: ["./src/index.css"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 ### PostCSS plugins
@@ -137,17 +146,20 @@ import esbuild from "esbuild";
 import autoprefixer from "autoprefixer";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin({
-      plugins: [autoprefixer()],
-    }),
-  ],
-  entryPoints: ["./src/index.css"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({
+        plugins: [autoprefixer()],
+      }),
+    ],
+    entryPoints: ["./src/index.css"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 If this was the `./src/index.css` file:
@@ -196,25 +208,28 @@ import esbuild from "esbuild";
 import tailwindcss from "tailwindcss";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin({
-      plugins: [
-        tailwindcss({
-          content: ["./src/**/*.{html,js,ts,jsx,tsx}"],
-          theme: {
-            extend: {},
-          },
-          plugins: [],
-        }),
-      ],
-    }),
-  ],
-  entryPoints: ["./src/index.css"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({
+        plugins: [
+          tailwindcss({
+            content: ["./src/**/*.{html,js,ts,jsx,tsx}"],
+            theme: {
+              extend: {},
+            },
+            plugins: [],
+          }),
+        ],
+      }),
+    ],
+    entryPoints: ["./src/index.css"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 You can also create a `tailwind.config.ts` file and use that with the plugin.
@@ -226,19 +241,22 @@ import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
 import tailwindConfig from "./tailwind.config.ts";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin({
-      plugins: [
-        tailwindcss(tailwindConfig),
-      ],
-    }),
-  ],
-  entryPoints: ["./src/index.css"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({
+        plugins: [
+          tailwindcss(tailwindConfig),
+        ],
+      }),
+    ],
+    entryPoints: ["./src/index.css"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 Then in your main.css file, you would import tailwinds base, components, and
@@ -260,19 +278,22 @@ import esbuild from "esbuild";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 import tailwindcss from "@tailwindcss/postcss";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin({
-      plugins: [
-        tailwindcss(),
-      ],
-    }),
-  ],
-  entryPoints: ["./src/index.css"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({
+        plugins: [
+          tailwindcss(),
+        ],
+      }),
+    ],
+    entryPoints: ["./src/index.css"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 In tailwindcss v4, the configuration is in css. When you import tailwindcss, it
@@ -302,19 +323,22 @@ options.
 import esbuild from "esbuild";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin({
-      modules: {
-        // options for css modules
-      },
-    }),
-  ],
-  entryPoints: ["./src/main.module.css"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({
+        modules: {
+          // options for css modules
+        },
+      }),
+    ],
+    entryPoints: ["./src/main.module.css"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 If this was the `./src/main.module.css` file:
@@ -468,19 +492,22 @@ import * as sass from "sass";
 import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
 import { sassPreprocessor } from "@udibo/esbuild-plugin-postcss/sass";
 
-esbuild.build({
-  plugins: [
-    postCSSPlugin({
-      preprocessors: [
-        sassPreprocessor(sass),
-      ],
-    }),
-  ],
-  entryPoints: ["./src/main.scss"],
-  outdir: "./dist",
-  bundle: true,
-});
-esbuild.stop();
+try {
+  await esbuild.build({
+    plugins: [
+      postCSSPlugin({
+        preprocessors: [
+          sassPreprocessor(sass),
+        ],
+      }),
+    ],
+    entryPoints: ["./src/main.scss"],
+    outdir: "./dist",
+    bundle: true,
+  });
+} finally {
+  await esbuild.stop();
+}
 ```
 
 If this was the `./src/main.scss` file:

@@ -304,12 +304,16 @@ export interface PostCSSPluginOptions {
  * import esbuild from "esbuild";
  * import { postCSSPlugin } from "@udibo/esbuild-plugin-postcss";
  *
- * esbuild.build({
- *   plugins: [postCSSPlugin()],
- *   entryPoints: ["./src/index.css"],
- *   outdir: "./dist",
- *   bundle: true,
- * });
+ * try {
+ *   await esbuild.build({
+ *     plugins: [postCSSPlugin()],
+ *     entryPoints: ["./src/index.css"],
+ *     outdir: "./dist",
+ *     bundle: true,
+ *   });
+ * } finally {
+ *   await esbuild.stop();
+ * }
  * ```
  *
  * @param options - The options for the postcss plugin.
