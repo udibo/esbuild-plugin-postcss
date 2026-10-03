@@ -408,6 +408,24 @@ import { css } from "./main.module.css";
 console.log(css); // Logs the generated css file
 ```
 
+#### JavaScript export names
+
+When importing a CSS module from JavaScript or TypeScript, class-map keys must
+be valid JavaScript binding names. For example, `.foo-bar` and `.default` cannot
+be exported as `export const foo-bar` and `export const default`. The name `css`
+is reserved for the generated stylesheet. Unsupported keys produce a build error
+identifying the key and its stylesheet.
+
+Use `modules: { localsConvention: "dashesOnly" }` to export `.foo-bar` as
+`fooBar`. `"camelCaseOnly"` also removes original dashed keys; `"dashes"` and
+`"camelCase"` retain them and still produce an error. For reserved names, rename
+the class or supply a `localsConvention` function that returns a valid name,
+such as `(name) => name + "Class"` for `.default` or `.css`.
+
+These restrictions apply to JavaScript named exports. CSS entry points and their
+JSON class maps keep arbitrary keys. Setting `modules: false` exports only the
+processed stylesheet as `css`. There is no default class-map export.
+
 ### Preprocessors
 
 This plugin supports using Sass, Less, and Stylus with PostCSS. If you want to

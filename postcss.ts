@@ -138,6 +138,58 @@ export interface PostCSSModulesOptions {
   ) => string | null | Promise<string | null>;
 }
 
+const moduleBindingName = /^[$_\p{ID_Start}][$_\u200C\u200D\p{ID_Continue}]*$/u;
+const reservedModuleBindings = new Set([
+  "arguments",
+  "await",
+  "break",
+  "case",
+  "catch",
+  "class",
+  "const",
+  "continue",
+  "debugger",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "enum",
+  "eval",
+  "export",
+  "extends",
+  "false",
+  "finally",
+  "for",
+  "function",
+  "if",
+  "implements",
+  "import",
+  "in",
+  "instanceof",
+  "interface",
+  "let",
+  "new",
+  "null",
+  "package",
+  "private",
+  "protected",
+  "public",
+  "return",
+  "static",
+  "super",
+  "switch",
+  "this",
+  "throw",
+  "true",
+  "try",
+  "typeof",
+  "var",
+  "void",
+  "while",
+  "with",
+  "yield",
+]);
+
 function getFilesRecursive(directory: string): string[] {
   return [...Deno.readDirSync(directory)].reduce<string[]>((files, file) => {
     const name = path.join(directory, file.name);
@@ -241,8 +293,11 @@ export interface PostCSSPluginOptions {
  * A stylesheet imported with a JavaScript `import` statement becomes a module
  * exporting the processed stylesheet as `css`; a CSS module also exports each
  * class name as a named export (`import { title, css } from
- * "./main.module.css"`). There is no default export. A stylesheet reached any
- * other way, such as an entry point or a CSS `@import`, is emitted as CSS.
+ * "./main.module.css"`). Export keys must be valid JavaScript binding names,
+ * and `css` is reserved for the stylesheet. Use `dashesOnly` or a custom
+ * `localsConvention` to remap unsupported names. There is no default export.
+ * A stylesheet reached any other way, such as an entry point or a CSS
+ * `@import`, is emitted as CSS.
  *
  * @example Build a stylesheet
  * ```ts
@@ -363,6 +418,24 @@ export const postCSSPlugin = (
         const absolutePath = pluginData.absolutePath as string;
         const mod = modulesMap.get(absolutePath) ?? {};
         const css = pluginData.css;
+        if (pluginData.kind === "import-statement") {
+          const errors = Object.keys(mod).flatMap((key) => {
+            const reason = key === "css"
+              ? "conflicts with the stylesheet export"
+              : !moduleBindingName.test(key) || reservedModuleBindings.has(key)
+              ? "is not a valid JavaScript binding name"
+              : undefined;
+            return reason
+              ? [{
+                text: `CSS module export ${
+                  JSON.stringify(key)
+                } ${reason}. Rename the class or use modules.localsConvention to produce a supported name.`,
+                location: { file: absolutePath },
+              }]
+              : [];
+          });
+          if (errors.length) return { errors };
+        }
         return {
           resolveDir: pluginData.resolveDir,
           loader: pluginData.kind === "import-statement" ? "js" : "css",
