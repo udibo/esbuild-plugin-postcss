@@ -42,8 +42,11 @@ async function runExample(
   modules: boolean,
   rejectCompilation = false,
 ) {
-  const directory = await Deno.makeTempDir({ prefix: "postcss-readme-" });
+  const temporaryDirectory = await Deno.makeTempDir({
+    prefix: "postcss-readme-",
+  });
   try {
+    const directory = await Deno.realPath(temporaryDirectory);
     await Deno.mkdir(path.join(directory, "src"));
     await Deno.writeTextFile(
       path.join(directory, "src", modules ? "main.module.css" : "index.css"),
@@ -168,7 +171,7 @@ export default { ...actual, build, stop };
       : undefined;
     return { output, stderr, events, css, classMap };
   } finally {
-    await Deno.remove(directory, { recursive: true });
+    await Deno.remove(temporaryDirectory, { recursive: true });
   }
 }
 
