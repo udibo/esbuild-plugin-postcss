@@ -1,3 +1,11 @@
+> [!WARNING]
+> **`@udibo/esbuild-plugin-postcss` is no longer maintained and this repository
+> is archived.** Udibo moved to Node, React Router framework mode and Hono
+> ([ADR-0031](https://github.com/udibo/udibo/blob/main/docs/decisions/0031-node-react-router-hono.md)),
+> which build with Vite. Use Vite's built-in
+> [PostCSS and Tailwind CSS support](https://vite.dev/guide/features#postcss)
+> instead. No further releases are planned.
+
 # PostCSS esbuild plugin
 
 [![JSR](https://jsr.io/badges/@udibo/esbuild-plugin-postcss)](https://jsr.io/@udibo/esbuild-plugin-postcss)
